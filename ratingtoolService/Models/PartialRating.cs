@@ -1,10 +1,11 @@
 ﻿using Microsoft.WindowsAzure.Mobile.Service;
 using System.ComponentModel.DataAnnotations;
 
-namespace ratingtoolService.DataObjects
+namespace ratingtoolService.Models
 {
-    public class PartialRating : EntityData
+    public class PartialRating 
     {
+        public int Id { get; set; }
         [Required()]
         [StringLength(50)]
         public string Name { get; set; }
@@ -45,6 +46,6 @@ namespace ratingtoolService.DataObjects
         public string Comment { get; set; }
 
         [Required()]
-        public string RatingID { get; set; }
+        public int RatingID { get; set; }
     }
 }

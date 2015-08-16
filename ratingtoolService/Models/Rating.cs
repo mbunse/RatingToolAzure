@@ -3,14 +3,21 @@ using System.ComponentModel.DataAnnotations;
 using Microsoft.WindowsAzure.Mobile.Service;
 using System.Collections.Generic;
 
-namespace ratingtoolService.DataObjects
+namespace ratingtoolService.Models
 {
-    public class Rating : EntityData
+    public class Rating
     {
+        // Needed to map to DTO which derives from EntityData that provides
+        // Id field with GUID.
+        public string Id { get; set; }
+
+        [Key]
+        public int RatingId { get; set; }
+
         public enum Status {
-           InProgress = 0,
-           Approved = 1,
-           Withdrawn = 2,
+            InProgress = 0,
+            Approved = 1,
+            Withdrawn = 2,
         }
 
         public Status RatingStatus { get; set; }
@@ -20,18 +27,11 @@ namespace ratingtoolService.DataObjects
 
         public enum InternalRatingClass
         {
-            A0 = 0,
-            A1 = 1,
-            A2 = 2,
-            A3 = 3,
-            A4 = 4,
-            A5 = 5,
-            B1 = 6,
-            B2 = 7,
-            B3 = 8,
-            B4 = 9,
-            B5 = 10,
-            E = 11
+            A = 0,
+            B = 1,
+            C = 2,
+            D = 3,
+            E = 4
         }
 
         public InternalRatingClass RatingClass { get; set; }
@@ -47,6 +47,8 @@ namespace ratingtoolService.DataObjects
         public virtual ICollection<PartialRating> PartialRatings { get; set; }
 
         [Required]
-        public string BusinessPartnerID { get; set; }
+        public int BusinessPartnerID { get; set; }
+
+        public virtual BusinessPartner BusinessPartner { get; set;}
     }
 }

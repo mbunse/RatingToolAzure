@@ -3,11 +3,10 @@ using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Linq;
 using Microsoft.WindowsAzure.Mobile.Service;
 using Microsoft.WindowsAzure.Mobile.Service.Tables;
-using ratingtoolService.DataObjects;
 
 namespace ratingtoolService.Models
 {
-    public class ratingtoolContext : DbContext
+    public class RatingtoolContext : DbContext
     {
         // You can add custom code to this file. Changes will not be overwritten.
         // 
@@ -21,10 +20,13 @@ namespace ratingtoolService.Models
         // Web.config, is the same as the service name when hosted in Azure.
         private const string connectionStringName = "Name=MS_TableConnectionString";
 
-        public ratingtoolContext() : base(connectionStringName)
+        public RatingtoolContext() : base(connectionStringName)
         {
-        } 
-
+        }
+        /* 
+        This three line advice the entity framework to build tables for the
+        three classes BusinessPartner, Rating and PartialRating.
+        */
         public DbSet<BusinessPartner> BusinessPartners { get; set; }
 
         public DbSet<Rating> Ratings { get; set; }
@@ -38,7 +40,14 @@ namespace ratingtoolService.Models
             {
                 modelBuilder.HasDefaultSchema(schema);
             }
-
+            /*
+            The following line of code is part of the VS template.
+            It creates a column annotation "ServiceTableColumn" for data fields with attribute [TableColumn]. 
+            E.g.: The attribute [TableColumn(TableColumnType.UpdatedAt)] will be translated to a 
+            column annotation "UpdatedAt".
+            This annotation enables the entity framework to automatically fill the corresponding fields
+            when according actions took place.
+            */
             modelBuilder.Conventions.Add(
                 new AttributeToColumnAnnotationConvention<TableColumnAttribute, string>(
                     "ServiceTableColumn", (property, attributes) => attributes.Single().ColumnType.ToString()));
