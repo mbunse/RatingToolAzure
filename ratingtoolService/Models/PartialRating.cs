@@ -5,7 +5,12 @@ namespace ratingtoolService.Models
 {
     public class PartialRating 
     {
-        public int Id { get; set; }
+        [Key]
+        public int PartialRatingId { get; set; }
+
+        //GUID for DTO access
+        public string Id { get; set; }
+
         [Required()]
         [StringLength(50)]
         public string Name { get; set; }
@@ -47,5 +52,8 @@ namespace ratingtoolService.Models
 
         [Required()]
         public int RatingID { get; set; }
+
+        //Navigation property
+        public virtual Rating Rating { get; set; }
     }
 }

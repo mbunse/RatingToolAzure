@@ -188,7 +188,10 @@
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\BpCurrentRatingController.cs" />
+    <Compile Include="Controllers\RatingSheetController.cs" />
+    <Compile Include="DataObjects\RatingSheet.cs" />
     <Compile Include="DataObjects\BpCurrentRating.cs" />
+    <Compile Include="Models\RatingSheetDomainManager.cs" />
     <Compile Include="Models\BpCurrentRatingDomainManager.cs" />
     <Compile Include="Models\BusinessPartner.cs" />
     <Compile Include="Models\PartialRating.cs" />
