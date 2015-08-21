@@ -16,11 +16,11 @@ namespace ratingtoolService.Models
     // MapssedEntityDomainManager provides basic functionality to provide all necessary methods
     // based on with AutoMapper mapped DTOs.
     // We only need to implement three methods and the constructor.
-    public class RatingSheetDomainManager : MappedEntityDomainManager<RatingSheet, PartialRating>
+    public class MobileRatingSheetDomainManager : MappedEntityDomainManager<MobileRatingSheet, RatingSheetSection>
     {
         private RatingtoolContext context;
 
-        public RatingSheetDomainManager(RatingtoolContext dbContext, HttpRequestMessage request, ApiServices services) 
+        public MobileRatingSheetDomainManager(RatingtoolContext dbContext, HttpRequestMessage request, ApiServices services) 
             : base(dbContext, request, services)
         {
             context = dbContext;
@@ -28,9 +28,9 @@ namespace ratingtoolService.Models
 
         protected override TKey GetKey<TKey>(string id)
         {
-            int ratingId = this.context.PartialRatings
+            int ratingId = this.context.RatingSheetSection
                 .Where(c => c.Id == id)
-                .Select(c => c.PartialRatingId)
+                .Select(c => c.RatingSheetSectionId)
                 .FirstOrDefault();
                 
             if (ratingId == 0)
@@ -46,13 +46,13 @@ namespace ratingtoolService.Models
         }
 
 
-        public override SingleResult<RatingSheet> Lookup(string id)
+        public override SingleResult<MobileRatingSheet> Lookup(string id)
         {
-            int partialRatingId = GetKey<int>(id);
-            return LookupEntity(p => p.PartialRatingId == partialRatingId);            
+            int ratingSheetSectionId = GetKey<int>(id);
+            return LookupEntity(p => p.RatingSheetSectionId == ratingSheetSectionId);            
         }
 
-        public override Task<RatingSheet> UpdateAsync(string id, Delta<RatingSheet> patch)
+        public override Task<MobileRatingSheet> UpdateAsync(string id, Delta<MobileRatingSheet> patch)
         {
             throw new NotImplementedException();
         }

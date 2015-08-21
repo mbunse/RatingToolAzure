@@ -9,37 +9,37 @@ using ratingtoolService.Models;
 
 namespace ratingtoolService.Controllers
 {
-    public class BpCurrentRatingController : TableController<BpCurrentRating>
+    public class MobileBusinessPartnerController : TableController<MobileBusinessPartner>
     {
         protected override void Initialize(HttpControllerContext controllerContext)
         {
             base.Initialize(controllerContext);
             RatingtoolContext context = new RatingtoolContext();
-            DomainManager = new BpCurrentRatingDomainManager(context, Request, Services);
+            DomainManager = new MobileBusinessPartnerDomainManager(context, Request, Services);
         }
 
         // GET tables/BpCurrentRating
-        public IQueryable<BpCurrentRating> GetAllBusinessPartner()
+        public IQueryable<MobileBusinessPartner> GetAllBusinessPartner()
         {
             return Query(); 
         }
 
         // GET tables/BpCurrentRating/48D68C86-6EA6-4C25-AA33-223FC9A27959
-        public SingleResult<BpCurrentRating> GetBusinessPartner(string id)
+        public SingleResult<MobileBusinessPartner> GetBusinessPartner(string id)
         {
             return Lookup(id);
         }
 
         // PATCH tables/BpCurrentRating/48D68C86-6EA6-4C25-AA33-223FC9A27959
-        public Task<BpCurrentRating> PatchBusinessPartner(string id, Delta<BpCurrentRating> patch)
+        public Task<MobileBusinessPartner> PatchBusinessPartner(string id, Delta<MobileBusinessPartner> patch)
         {
              return UpdateAsync(id, patch);
         }
 
         // POST tables/BpCurrentRating
-        public async Task<IHttpActionResult> PostBusinessPartner(BpCurrentRating item)
+        public async Task<IHttpActionResult> PostBusinessPartner(MobileBusinessPartner item)
         {
-            BpCurrentRating current = await InsertAsync(item);
+            MobileBusinessPartner current = await InsertAsync(item);
             return CreatedAtRoute("Tables", new { id = current.Id }, current);
         }
 

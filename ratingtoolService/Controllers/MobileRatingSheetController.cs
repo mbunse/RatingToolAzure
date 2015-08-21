@@ -9,38 +9,38 @@ using ratingtoolService.Models;
 
 namespace ratingtoolService.Controllers
 {
-    public class RatingSheetController : TableController<RatingSheet>
+    public class MobileRatingSheetController : TableController<MobileRatingSheet>
     {
         protected override void Initialize(HttpControllerContext controllerContext)
         {
             base.Initialize(controllerContext);
             RatingtoolContext context = new RatingtoolContext();
-            DomainManager = new RatingSheetDomainManager(context, Request, Services);
+            DomainManager = new MobileRatingSheetDomainManager(context, Request, Services);
         }
 
         // Should be called via tables/RatingSheet?$filter=(ratingGuid+eq+'95e6ec59-9ce7-4096-8bcd-02315e29991f')
         // GET tables/RatingSheet
-        public IQueryable<RatingSheet> GetAllRatingSheet()
+        public IQueryable<MobileRatingSheet> GetAllRatingSheet()
         {
             return Query(); 
         }
 
         // GET tables/RatingSheet/48D68C86-6EA6-4C25-AA33-223FC9A27959
-        public SingleResult<RatingSheet> GetRatingSheet(string id)
+        public SingleResult<MobileRatingSheet> GetRatingSheet(string id)
         {
             return Lookup(id);
         }
 
         // PATCH tables/RatingSheet/48D68C86-6EA6-4C25-AA33-223FC9A27959
-        public Task<RatingSheet> PatchRatingSheet(string id, Delta<RatingSheet> patch)
+        public Task<MobileRatingSheet> PatchRatingSheet(string id, Delta<MobileRatingSheet> patch)
         {
              return UpdateAsync(id, patch);
         }
 
         // POST tables/RatingSheet
-        public async Task<IHttpActionResult> PostRatingSheet(RatingSheet item)
+        public async Task<IHttpActionResult> PostRatingSheet(MobileRatingSheet item)
         {
-            RatingSheet current = await InsertAsync(item);
+            MobileRatingSheet current = await InsertAsync(item);
             return CreatedAtRoute("Tables", new { id = current.Id }, current);
         }
 

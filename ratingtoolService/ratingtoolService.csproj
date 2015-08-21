@@ -187,15 +187,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Controllers\BpCurrentRatingController.cs" />
-    <Compile Include="Controllers\RatingSheetController.cs" />
-    <Compile Include="DataObjects\RatingSheet.cs" />
-    <Compile Include="DataObjects\BpCurrentRating.cs" />
-    <Compile Include="Models\RatingSheetDomainManager.cs" />
-    <Compile Include="Models\BpCurrentRatingDomainManager.cs" />
+    <Compile Include="Controllers\MobileBusinessPartnerController.cs" />
+    <Compile Include="Controllers\MobileRatingSheetController.cs" />
+    <Compile Include="DataObjects\MobilePartialRating.cs" />
+    <Compile Include="DataObjects\MobileRatingSheet.cs" />
+    <Compile Include="DataObjects\MobileBusinessPartner.cs" />
+    <Compile Include="Models\MobileRatingSheetDomainManager.cs" />
+    <Compile Include="Models\MobileBusinessPartnerDomainManager.cs" />
     <Compile Include="Models\BusinessPartner.cs" />
     <Compile Include="Models\PartialRating.cs" />
     <Compile Include="Models\Rating.cs" />
+    <Compile Include="Models\RatingSheetSection.cs" />
     <Compile Include="Models\ratingtoolContext.cs" />
     <Compile Include="ScheduledJobs\SampleJob.cs" />
     <Compile Include="Global.asax.cs">

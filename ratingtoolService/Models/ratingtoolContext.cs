@@ -31,6 +31,8 @@ namespace ratingtoolService.Models
 
         public DbSet<Rating> Ratings { get; set; }
 
+        public DbSet<RatingSheetSection> RatingSheetSection { get; set; }
+
         public DbSet<PartialRating> PartialRatings { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

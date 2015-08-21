@@ -10,19 +10,17 @@ This data object should be provided by the API instead of only the
 **/
 namespace ratingtoolService.DataObjects
 {
-    public class BpCurrentRating : EntityData
+    public class MobilePartialRating : EntityData
     {
-        public string ShortName { get; set; }
+        public string Name { get; set; }
 
-        public int BusinessPartnerId { get; set; }
+        public float Ratio { get; set; }
 
-        public int RatingId { get; set; }
+        public PartialRating.RiskGroupType RiskGroup { get; set; }
 
-        //Id of BusinessPartner for a given rating
-        public string RatingBpId { get; set; }
+        public float Weight { get; set; }
 
-        public Rating.InternalRatingClass RatingClass { get; set; }
+        public string Comment { get; set; }
 
-        public Rating.RatingMethodType RatingMethod { get; set; }
     }
 }

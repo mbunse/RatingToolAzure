@@ -36,19 +36,24 @@ namespace ratingtoolService
                 //thereofre CreateMap<BpCurrentRating, BusinessPartner> allows to map
                 //from an instance to the DTO BpCurrentRating to a new instance of 
                 //the model BusinessPartner
-                cfg.CreateMap<BpCurrentRating, Rating>();
+                cfg.CreateMap<MobileBusinessPartner, Rating>();
                 //This call to ForMember maps from BpCurrentRating.BusinessPartnerId 
                 //to BusinessParnter.Id
                 //e.g. 
                 //.ForMember(dst => dst.RatingId, map => map.MapFrom(x => x.RatingId));
-                cfg.CreateMap<Rating, BpCurrentRating>()
+                cfg.CreateMap<Rating, MobileBusinessPartner>()
                     .ForMember(dst => dst.RatingBpId, map => map.MapFrom(x => x.BusinessPartner.Id))
                     .ForMember(dst => dst.ShortName, map => map.MapFrom(x => x.BusinessPartner.ShortName))
                     .ForMember(dst => dst.BusinessPartnerId, map => map.MapFrom(x => x.BusinessPartner.BusinessPartnerId));
 
-                cfg.CreateMap<RatingSheet, PartialRating>();
-                cfg.CreateMap<PartialRating, RatingSheet>()
-                    .ForMember(dst => dst.RatingGuid, map => map.MapFrom(x => x.Rating.Id));
+                cfg.CreateMap<MobileRatingSheet, RatingSheetSection>()
+                    .ForMember(dst => dst.PartialRatingsInSection, map => map.MapFrom(x => x.PartialRatingsInSection));
+                cfg.CreateMap<RatingSheetSection, MobileRatingSheet>()
+                    .ForMember(dst => dst.PartialRatingsInSection, map => map.MapFrom(x => x.PartialRatingsInSection))
+                    .ForMember(dst => dst.RatingGuid, map => map.MapFrom(x => x.Id));
+                cfg.CreateMap<MobilePartialRating, PartialRating>();
+                cfg.CreateMap<PartialRating, MobilePartialRating>();
+                    
             });
 
             Database.SetInitializer(new ratingtoolInitializer());
@@ -59,93 +64,339 @@ namespace ratingtoolService
     {
         protected override void Seed(RatingtoolContext context)
         {
-            List<BusinessPartner> BusinessPartners = new List<BusinessPartner>
-            {
-                new BusinessPartner { BusinessPartnerId = 1, ShortName = "Company A", Id = Guid.NewGuid().ToString() },
-                new BusinessPartner { BusinessPartnerId = 2, ShortName = "Company A", Id = Guid.NewGuid().ToString() },
-                new BusinessPartner { BusinessPartnerId = 3, ShortName = "Company A", Id = Guid.NewGuid().ToString() },
-                new BusinessPartner { BusinessPartnerId = 4, ShortName = "Company A", Id = Guid.NewGuid().ToString() },
-                new BusinessPartner { BusinessPartnerId = 5, ShortName = "Company A", Id = Guid.NewGuid().ToString() },
-                new BusinessPartner { BusinessPartnerId = 6, ShortName = "Company A", Id = Guid.NewGuid().ToString() },
-                new BusinessPartner { BusinessPartnerId = 7, ShortName = "Company A", Id = Guid.NewGuid().ToString() },
-                new BusinessPartner { BusinessPartnerId = 8, ShortName = "Sovereign B", Id = Guid.NewGuid().ToString() },
-                new BusinessPartner { BusinessPartnerId = 9, ShortName = "Sovereign B", Id = Guid.NewGuid().ToString() },
-                new BusinessPartner { BusinessPartnerId = 10, ShortName = "Sovereign B", Id = Guid.NewGuid().ToString() }
-            };
-
-            foreach (BusinessPartner BusinessPartner in BusinessPartners)
-            {
-                context.Set<BusinessPartner>().Add(BusinessPartner);
-            }
-
+            List<BusinessPartner> BusinessPartners = new List<BusinessPartner> { };
             List<Rating> Ratings = new List<Rating> { };
             int nCorRatings = 7;
             int nSovRatings = 3;
+            int iBp = 0;
+            BusinessPartner bp;
+
+            List<PartialRating> PartialRatings = new List<PartialRating> { };
+            List<RatingSheetSection> RatingSheetSections = new List<RatingSheetSection> { };
+            int iRatingSheetSection = 0;
+            int iPartialRating = 0;
+            RatingSheetSection ratingSheetSection;
+
             for (int i = 0; i < nCorRatings; i++)
             {
+                bp = new BusinessPartner { BusinessPartnerId = ++iBp, ShortName = "Company A", Id = Guid.NewGuid().ToString() };
+                BusinessPartners.Add(bp);
                 Ratings.Add(new Rating
                 {
-                    RatingId = i + 1,
-                    BusinessPartnerID = i + 1,
+                    RatingId = bp.BusinessPartnerId,
+                    BusinessPartnerID = bp.BusinessPartnerId,
                     RatingStatus = Rating.Status.Approved,
                     ValidUntil = DateTime.Parse("2014-02-14"),
                     RatingClass = Rating.InternalRatingClass.B,
                     RatingMethod = Rating.RatingMethodType.COR,
                     Id = Guid.NewGuid().ToString()
                 });
+
+                ratingSheetSection = new RatingSheetSection
+                {
+                    RatingID = bp.BusinessPartnerId,
+                    RatingSheetSectionId = ++iRatingSheetSection,
+                    Id = Guid.NewGuid().ToString(),
+                    Name = "Quantitive",
+                    RiskGroup = PartialRating.RiskGroupType.B
+                };
+                RatingSheetSections.Add(ratingSheetSection);
+
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "Equity Capital Ratio",
+                    Ratio = 12.2F,
+                    Weight = 0.08F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "Liquidity Ratio",
+                    Ratio = 4.9F,
+                    Weight = 0.08F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "EBITDA margin",
+                    Ratio = 10.2F,
+                    Weight = 0.08F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "Sales (Mio. EUR)",
+                    Ratio = 10245.23F,
+                    Weight = 0.08F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "Dept Ratio",
+                    Ratio = 0.21F,
+                    Weight = 0.08F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "Dept Ratio",
+                    Ratio = 0.21F,
+                    Weight = 0.08F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+
+                ratingSheetSection = new RatingSheetSection
+                {
+                    RatingID = bp.BusinessPartnerId,
+                    RatingSheetSectionId = ++iRatingSheetSection,
+                    Id = Guid.NewGuid().ToString(),
+                    Name = "Qualitative",
+                    RiskGroup = PartialRating.RiskGroupType.B
+                };
+                RatingSheetSections.Add(ratingSheetSection);
+
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "Strength",
+                    RiskGroup = PartialRating.RiskGroupType.A,
+                    Weight = 0.08F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "Weaknesses",
+                    RiskGroup = PartialRating.RiskGroupType.B,
+                    Weight = 0.06F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "Opportunities",
+                    RiskGroup = PartialRating.RiskGroupType.C,
+                    Weight = 0.06F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "Trends",
+                    RiskGroup = PartialRating.RiskGroupType.B,
+                    Weight = 0.08F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+
+
+                ratingSheetSection = new RatingSheetSection
+                {
+                    RatingID = bp.BusinessPartnerId,
+                    RatingSheetSectionId = ++iRatingSheetSection,
+                    Id = Guid.NewGuid().ToString(),
+                    Name = "Environment",
+                    RiskGroup = PartialRating.RiskGroupType.B
+                };
+                RatingSheetSections.Add(ratingSheetSection);
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "Sector",
+                    RiskGroup = PartialRating.RiskGroupType.D,
+                    Weight = 0.06F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "Ecomomic Cycle",
+                    RiskGroup = PartialRating.RiskGroupType.C,
+                    Weight = 0.06F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "Country Risk",
+                    RiskGroup = PartialRating.RiskGroupType.A,
+                    Weight = 0.06F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+
+
             }
             for (int i = 0; i < nSovRatings; i++)
             {
+                bp = new BusinessPartner { BusinessPartnerId = ++iBp, ShortName = "Sovereign B", Id = Guid.NewGuid().ToString() };
+                BusinessPartners.Add(bp);
                 Ratings.Add(new Rating
                 {
-                    RatingId = i + 1 + nCorRatings,
-                    BusinessPartnerID = i + 1 + nCorRatings,
+                    RatingId = bp.BusinessPartnerId,
+                    BusinessPartnerID = bp.BusinessPartnerId,
                     RatingStatus = Rating.Status.Approved,
                     ValidUntil = DateTime.Parse("2014-02-14"),
                     RatingClass = Rating.InternalRatingClass.A,
                     RatingMethod = Rating.RatingMethodType.SOV,
                     Id = Guid.NewGuid().ToString()
                 });
+
+                // SOV Rating
+                ratingSheetSection = new RatingSheetSection
+                {
+                    RatingID = bp.BusinessPartnerId,
+                    RatingSheetSectionId = ++iRatingSheetSection,
+                    Id = Guid.NewGuid().ToString(),
+                    Name = "Quantitive",
+                    RiskGroup = PartialRating.RiskGroupType.B
+                };
+                RatingSheetSections.Add(ratingSheetSection);
+
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "GNP / Population",
+                    Ratio = 30125.7F,
+                    Weight = 0.9F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "GDP Growth Rate",
+                    Ratio = 0.4F,
+                    Weight = 0.9F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "Inflation Rate",
+                    Ratio = 1.0F,
+                    Weight = 0.9F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "Investment Ratio",
+                    Ratio = 16.2F,
+                    Weight = 0.9F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+
+                ratingSheetSection = new RatingSheetSection
+                {
+                    RatingID = bp.BusinessPartnerId,
+                    RatingSheetSectionId = ++iRatingSheetSection,
+                    Id = Guid.NewGuid().ToString(),
+                    Name = "Qualitative",
+                    RiskGroup = PartialRating.RiskGroupType.B
+                };
+                RatingSheetSections.Add(ratingSheetSection);
+
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "Structural Strength",
+                    RiskGroup = PartialRating.RiskGroupType.A,
+                    Weight = 0.9F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "Current account",
+                    Ratio = 0.21F,
+                    Weight = 0.9F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "Foreign Dept",
+                    RiskGroup = PartialRating.RiskGroupType.A,
+                    Weight = 0.9F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "Domestic policy",
+                    RiskGroup = PartialRating.RiskGroupType.B,
+                    Weight = 0.9F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "Foreign policy",
+                    RiskGroup = PartialRating.RiskGroupType.A,
+                    Weight = 0.9F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "Economic System",
+                    RiskGroup = PartialRating.RiskGroupType.C,
+                    Weight = 0.9F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+                PartialRatings.Add(new PartialRating
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    PartialRatingId = ++iPartialRating,
+                    Name = "Stability of Banking Industry",
+                    RiskGroup = PartialRating.RiskGroupType.B,
+                    Weight = 0.10F,
+                    RatingSheetSectionId = ratingSheetSection.RatingSheetSectionId
+                });
+
+
             }
-            
+
+            foreach (BusinessPartner BusinessPartner in BusinessPartners)
+            {
+                context.Set<BusinessPartner>().Add(BusinessPartner);
+            }
+
             foreach (Rating Rating in Ratings)
             {
                 context.Set<Rating>().Add(Rating);
             }
 
-            List<PartialRating> PartialRatings = new List<PartialRating> { };
-
-            for (int i = 0; i < nCorRatings; i++)
+            foreach (RatingSheetSection RatingSheetSection in RatingSheetSections)
             {
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 1, Name = "Equity Capital Ratio", Ratio = 12.2F, RatingSection = PartialRating.RatingSectionType.Quantitive, Weight = 0.08F, RatingID = i + 1 });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 2, Name = "Liquidity Ratio", Ratio = 4.9F, RatingSection = PartialRating.RatingSectionType.Quantitive, Weight = 0.08F, RatingID = i + 1 });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 3, Name = "EBITDA margin", Ratio = 10.2F, RatingSection = PartialRating.RatingSectionType.Quantitive, Weight = 0.08F, RatingID = i + 1 });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 4, Name = "Sales (Mio. EUR)", Ratio = 10245.23F, RatingSection = PartialRating.RatingSectionType.Quantitive, Weight = 0.08F, RatingID = i + 1 });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 5, Name = "Dept Ratio", Ratio = 0.21F, RatingSection = PartialRating.RatingSectionType.Quantitive, Weight = 0.08F, RatingID = i + 1 });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 6, Name = "Dept Ratio", Ratio = 0.21F, RatingSection = PartialRating.RatingSectionType.Quantitive, Weight = 0.08F, RatingID = i + 1 });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 7, Name = "Strength", RiskGroup = PartialRating.RiskGroupType.A, RatingSection = PartialRating.RatingSectionType.Qualitative, Weight = 0.08F, RatingID = i + 1 });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 8, Name = "Weaknesses", RiskGroup = PartialRating.RiskGroupType.B, RatingSection = PartialRating.RatingSectionType.Qualitative, Weight = 0.06F, RatingID = i + 1 });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 9, Name = "Strength", RiskGroup = PartialRating.RiskGroupType.A, RatingSection = PartialRating.RatingSectionType.Qualitative, Weight = 0.06F, RatingID = i + 1 });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 10, Name = "Opportunities", RiskGroup = PartialRating.RiskGroupType.C, RatingSection = PartialRating.RatingSectionType.Qualitative, Weight = 0.06F, RatingID = i + 1 });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 11, Name = "Trends", RiskGroup = PartialRating.RiskGroupType.B, RatingSection = PartialRating.RatingSectionType.Qualitative, Weight = 0.08F, RatingID = i + 1 });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 12, Name = "Sector", RiskGroup = PartialRating.RiskGroupType.D, RatingSection = PartialRating.RatingSectionType.Environment, Weight = 0.06F, RatingID = i + 1 });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 13, Name = "Ecomomic Cycle", RiskGroup = PartialRating.RiskGroupType.C, RatingSection = PartialRating.RatingSectionType.Environment, Weight = 0.06F, RatingID = i + 1 });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 14, Name = "Country Risk", RiskGroup = PartialRating.RiskGroupType.A, RatingSection = PartialRating.RatingSectionType.Environment, Weight = 0.06F, RatingID = i + 1 });
-            }
-            for (int i = 0; i < nSovRatings; i++)
-            {
-                // SOV Rating
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 1, Name = "GNP / Population", Ratio = 30125.7F, RatingSection = PartialRating.RatingSectionType.Quantitive, Weight = 0.9F, RatingID = i + 1 + nCorRatings });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 2, Name = "GDP Growth Rate", Ratio = 0.4F, RatingSection = PartialRating.RatingSectionType.Quantitive, Weight = 0.9F, RatingID = i + 1 + nCorRatings });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 3, Name = "Inflation Rate", Ratio = 1.0F, RatingSection = PartialRating.RatingSectionType.Quantitive, Weight = 0.9F, RatingID = i + 1 + nCorRatings });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 4, Name = "Investment Ratio", Ratio = 16.2F, RatingSection = PartialRating.RatingSectionType.Quantitive, Weight = 0.9F, RatingID = i + 1 + nCorRatings });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 5, Name = "Structural Strength", RiskGroup = PartialRating.RiskGroupType.A, RatingSection = PartialRating.RatingSectionType.Quantitive, Weight = 0.9F, RatingID = i + 1 + nCorRatings });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 6, Name = "Current account", Ratio = 0.21F, RatingSection = PartialRating.RatingSectionType.Quantitive, Weight = 0.9F, RatingID = i + 1 + nCorRatings });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 7, Name = "Foreign Dept", RiskGroup = PartialRating.RiskGroupType.A, RatingSection = PartialRating.RatingSectionType.Qualitative, Weight = 0.9F, RatingID = i + 1 + nCorRatings });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 8, Name = "Domestic policy", RiskGroup = PartialRating.RiskGroupType.B, RatingSection = PartialRating.RatingSectionType.Qualitative, Weight = 0.9F, RatingID = i + 1 + nCorRatings });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 9, Name = "Foreign policy", RiskGroup = PartialRating.RiskGroupType.A, RatingSection = PartialRating.RatingSectionType.Qualitative, Weight = 0.9F, RatingID = i + 1 + nCorRatings });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 10, Name = "Economic System", RiskGroup = PartialRating.RiskGroupType.C, RatingSection = PartialRating.RatingSectionType.Qualitative, Weight = 0.9F, RatingID = i + 1 + nCorRatings });
-                PartialRatings.Add(new PartialRating { Id = Guid.NewGuid().ToString(), PartialRatingId = i + 11, Name = "Stability of Banking Industry", RiskGroup = PartialRating.RiskGroupType.B, RatingSection = PartialRating.RatingSectionType.Qualitative, Weight = 0.10F, RatingID = i + 1 + nCorRatings });
+                context.Set<RatingSheetSection>().Add(RatingSheetSection);
             }
 
             foreach (PartialRating PartialRating in PartialRatings)

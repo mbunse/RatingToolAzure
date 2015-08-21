@@ -18,17 +18,6 @@ namespace ratingtoolService.Models
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "0.00")]
         public float Ratio { get; set; }
 
-        public enum RatingSectionType
-        {
-            Quantitive = 1,
-            Qualitative = 2,
-            Environment = 3,
-            Politics = 4,
-            Economy = 5
-        }
-
-        [Required()]
-        public RatingSectionType RatingSection { get; set; }
 
         public enum RiskGroupType
         {
@@ -51,9 +40,9 @@ namespace ratingtoolService.Models
         public string Comment { get; set; }
 
         [Required()]
-        public int RatingID { get; set; }
+        public int RatingSheetSectionId { get; set; }
 
         //Navigation property
-        public virtual Rating Rating { get; set; }
+        public virtual Rating RatingSheetSection { get; set; }
     }
 }

@@ -16,11 +16,11 @@ namespace ratingtoolService.Models
     // MapssedEntityDomainManager provides basic functionality to provide all necessary methods
     // based on with AutoMapper mapped DTOs.
     // We only need to implement three methods and the constructor.
-    public class BpCurrentRatingDomainManager : MappedEntityDomainManager<BpCurrentRating, Rating>
+    public class MobileBusinessPartnerDomainManager : MappedEntityDomainManager<MobileBusinessPartner, Rating>
     {
         private RatingtoolContext context;
 
-        public BpCurrentRatingDomainManager(RatingtoolContext dbContext, HttpRequestMessage request, ApiServices services) 
+        public MobileBusinessPartnerDomainManager(RatingtoolContext dbContext, HttpRequestMessage request, ApiServices services) 
             : base(dbContext, request, services)
         {
             context = dbContext;
@@ -46,13 +46,13 @@ namespace ratingtoolService.Models
         }
 
 
-        public override SingleResult<BpCurrentRating> Lookup(string id)
+        public override SingleResult<MobileBusinessPartner> Lookup(string id)
         {
             int ratingId = GetKey<int>(id);
             return LookupEntity(p => p.RatingId == ratingId);            
         }
 
-        public override Task<BpCurrentRating> UpdateAsync(string id, Delta<BpCurrentRating> patch)
+        public override Task<MobileBusinessPartner> UpdateAsync(string id, Delta<MobileBusinessPartner> patch)
         {
             throw new NotImplementedException();
         }
