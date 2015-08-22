@@ -50,7 +50,7 @@ namespace ratingtoolService
                     .ForMember(dst => dst.PartialRatingsInSection, map => map.MapFrom(x => x.PartialRatingsInSection));
                 cfg.CreateMap<RatingSheetSection, MobileRatingSheet>()
                     .ForMember(dst => dst.PartialRatingsInSection, map => map.MapFrom(x => x.PartialRatingsInSection))
-                    .ForMember(dst => dst.RatingGuid, map => map.MapFrom(x => x.Id));
+                    .ForMember(dst => dst.RatingGuid, map => map.MapFrom(x => x.Rating.Id));
                 cfg.CreateMap<MobilePartialRating, PartialRating>();
                 cfg.CreateMap<PartialRating, MobilePartialRating>();
                     
